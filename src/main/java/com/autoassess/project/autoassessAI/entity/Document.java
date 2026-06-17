@@ -18,6 +18,7 @@ public class Document {
     private String filePath;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String extractedText;
     private String status; //uploaded,processed
     private LocalDateTime createdAt =LocalDateTime.now();
