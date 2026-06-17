@@ -16,6 +16,7 @@ public class Quiz {
     private Long documentId;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String questions;
 
     private LocalDateTime createdAt= LocalDateTime.now();
