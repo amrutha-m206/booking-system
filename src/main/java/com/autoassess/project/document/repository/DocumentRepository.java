@@ -1,9 +1,7 @@
-package com.autoassess.project.autoassessAI.repository;
+package com.autoassess.project.document.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.autoassess.project.autoassessAI.entity.Document;
-
-import java.util.List;
+import com.autoassess.project.document.entity.Document;
 
 public interface DocumentRepository extends JpaRepository<Document,Long> {
 

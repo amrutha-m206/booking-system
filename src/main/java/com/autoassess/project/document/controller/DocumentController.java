@@ -1,9 +1,9 @@
-package com.autoassess.project.autoassessAI.controller;
+package com.autoassess.project.document.controller;
 
-import com.autoassess.project.autoassessAI.service.DocumentService;
+import com.autoassess.project.document.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.autoassess.project.autoassessAI.entity.Document;
+import com.autoassess.project.document.entity.Document;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

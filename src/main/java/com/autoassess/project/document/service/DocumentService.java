@@ -1,8 +1,8 @@
-package com.autoassess.project.autoassessAI.service;
+package com.autoassess.project.document.service;
 
-import com.autoassess.project.autoassessAI.entity.Document;
-import com.autoassess.project.autoassessAI.repository.DocumentRepository;
-import com.autoassess.project.autoassessAI.utils.PDFExtractor;
+import com.autoassess.project.document.entity.Document;
+import com.autoassess.project.document.repository.DocumentRepository;
+import com.autoassess.project.document.utils.PDFExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

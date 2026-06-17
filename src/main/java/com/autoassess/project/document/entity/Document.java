@@ -1,4 +1,4 @@
-package com.autoassess.project.autoassessAI.entity;
+package com.autoassess.project.document.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
