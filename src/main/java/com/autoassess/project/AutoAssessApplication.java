@@ -1,13 +1,13 @@
-package com.booking_system.project;
+package com.autoassess.project;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BookingSystemApplication {
+public class AutoAssessApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BookingSystemApplication.class, args);
+		SpringApplication.run(AutoAssessApplication.class, args);
 	}
 
 }

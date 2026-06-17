@@ -1,4 +1,4 @@
-package com.booking_system.project;
+package com.autoassess.project;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
