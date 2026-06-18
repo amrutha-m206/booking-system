@@ -17,7 +17,9 @@ public class Assessment {
     private Long id;
     private Long userId;
     private Long quizId;
-    private Integer score;
     private Integer totalQuestions;
+    private Integer correctAnswers;
+    private Integer wrongAnswers;
+    private Double scorePercentage;
     private LocalDateTime submittedAt;
 }

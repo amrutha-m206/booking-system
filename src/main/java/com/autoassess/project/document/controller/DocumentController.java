@@ -16,8 +16,8 @@ public class DocumentController {
     private DocumentService documentService;
 
     @PostMapping("/upload")
-    public Document upload(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) throws IOException {
-        return documentService.uploadDocument(file,userId);
+    public Document upload(@RequestParam("file") MultipartFile file) throws IOException {
+        return documentService.uploadDocument(file);
     }
 
 }

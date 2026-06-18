@@ -3,6 +3,9 @@ package com.autoassess.project.document.service;
 import com.autoassess.project.document.entity.Document;
 import com.autoassess.project.document.repository.DocumentRepository;
 import com.autoassess.project.document.utils.PDFExtractor;
+import com.autoassess.project.security.AuthUtil;
+import com.autoassess.project.user.entity.User;
+import com.autoassess.project.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,12 +20,21 @@ public class DocumentService {
 
     @Autowired
     private DocumentRepository documentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private AuthUtil authUtil;
+
     private static final Logger log = LoggerFactory.getLogger(DocumentService.class);
     private final String uploadDir = System.getProperty("user.dir") + "/uploads/";
 
-    public Document uploadDocument(MultipartFile file, Long userId) throws IOException {
+    public Document uploadDocument(MultipartFile file) throws IOException {
 
-        log.info("Upload request received for userId: {}", userId);
+        String email= authUtil.getCurrentUserEmail();
+        User user=userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
+        log.info("Upload request received for userId: {}", user.getId());
 
         File dir = new File(uploadDir);
         if (!dir.exists()) {
@@ -33,7 +45,7 @@ public class DocumentService {
         file.transferTo(dest);
 
         Document doc=new Document();
-        doc.setUserId(userId);
+        doc.setUserId(user.getId());
         doc.setFileName(file.getOriginalFilename());
         doc.setFilePath(filePath);
         doc.setStatus("UPLOADED");

@@ -5,6 +5,9 @@ import com.autoassess.project.assessment.entity.Assessment;
 import com.autoassess.project.assessment.repository.AssessmentRepository;
 import com.autoassess.project.quiz.entity.Quiz;
 import com.autoassess.project.quiz.repository.QuizRepository;
+import com.autoassess.project.security.AuthUtil;
+import com.autoassess.project.user.entity.User;
+import com.autoassess.project.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AssessmentService {
@@ -23,20 +28,30 @@ public class AssessmentService {
     @Autowired
     private QuizRepository quizRepository;
 
+    @Autowired
+    private AuthUtil authUtil;
+
+    @Autowired
+    private UserRepository userRepository;
+
+
     private final ObjectMapper mapper=new ObjectMapper();
 
     private static final Logger log=LoggerFactory.getLogger(AssessmentService.class);
 
     public Assessment submitQuiz(AssessmentRequest request) throws Exception{
 
+        String email=authUtil.getCurrentUserEmail();
+        User user=userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
 
-        log.info("Submitting quiz for userId: {}, quizId: {}", request.getUserId(), request.getQuizId());
+        log.info("Submitting quiz for userId: {}, quizId: {}", user.getId(), request.getQuizId());
         Quiz quiz=quizRepository.findById(request.getQuizId()).orElseThrow(()-> new RuntimeException("Quiz not found"));
 
         JsonNode quizArray=mapper.readTree(quiz.getQuestions());
         log.info("Quiz loaded successfully. Total questions: {}", quizArray.size());
 
-        int score=0;
+        int correct = 0;
+
         int totalQuestions=quizArray.size();
 
         for(int i=0;i<quizArray.size();i++){
@@ -47,16 +62,23 @@ public class AssessmentService {
             String userAnswer=request.getAnswers().get(i);
             log.info("Q{} -> correct: {}, user: {}", i + 1, correctAnswer, userAnswer);
             if(correctAnswer.equalsIgnoreCase(userAnswer)){
-                score++;
+                correct++;
             }
         }
-        log.info("Final Score: {}/{}", score, totalQuestions);
+
+        int wrong = totalQuestions - correct;
+
+        double scorePercentage = ((double) correct / totalQuestions) * 100;
+
+        log.info("Final Score: {}/{} ({}%)", correct, totalQuestions, scorePercentage);
 
         Assessment assessment=new Assessment();
-        assessment.setUserId(request.getUserId());
+        assessment.setUserId(user.getId());
         assessment.setQuizId(request.getQuizId());
-        assessment.setScore(score);
         assessment.setTotalQuestions((totalQuestions));
+        assessment.setCorrectAnswers(correct);
+        assessment.setWrongAnswers(wrong);
+        assessment.setScorePercentage(scorePercentage);
         assessment.setSubmittedAt(LocalDateTime.now());
 
         log.info("Saving assessment...");
@@ -64,6 +86,50 @@ public class AssessmentService {
         Assessment saved= assessmentRepository.save(assessment);
         log.info("Assessment saved successfully with id: {}", saved.getId());
         return saved;
+
+    }
+
+    public List<Assessment> getHistory(){
+        String email=authUtil.getCurrentUserEmail();
+
+        User user=userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
+        return assessmentRepository.findByUserId(user.getId());
+    }
+
+    public Map<String,Object> getAnalytics(){
+
+        String email=authUtil.getCurrentUserEmail();
+
+        User user=userRepository.findByEmail(email).orElseThrow();
+
+        List<Assessment> assessments=assessmentRepository.findByUserId(user.getId());
+
+        if(assessments.isEmpty()){
+            return Map.of(
+                    "totalAttempts",0,
+                    "avgScore",0,
+                    "bestScore",0,
+                    "worstScore",0
+            );
+        }
+        double totalScore=0;
+        double best=Double.MIN_VALUE;
+        double worst=Double.MAX_VALUE;
+
+        for(Assessment a:assessments){
+            double score=a.getScorePercentage();
+            totalScore+=score;
+
+            best=Math.max(best,score);
+            worst=Math.min(worst,score);
+        }
+        double avg=totalScore/ assessments.size();
+        return Map.of(
+                "totalAttempts",assessments.size(),
+                "avgScore",avg,
+                "bestScore",best,
+                "worstScore",worst
+        );
 
     }
 

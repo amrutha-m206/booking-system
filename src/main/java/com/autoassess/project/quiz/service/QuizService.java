@@ -5,6 +5,9 @@ import com.autoassess.project.document.repository.DocumentRepository;
 import com.autoassess.project.quiz.client.GroqClient;
 import com.autoassess.project.quiz.entity.Quiz;
 import com.autoassess.project.quiz.repository.QuizRepository;
+import com.autoassess.project.security.AuthUtil;
+import com.autoassess.project.user.entity.User;
+import com.autoassess.project.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +24,25 @@ public class QuizService {
 
     @Autowired
     private GroqClient groqClient;
+
+    @Autowired
+    private AuthUtil authUtil;
+
+    @Autowired
+    private UserRepository userRepository;
+
     private static final Logger log =LoggerFactory.getLogger(QuizService.class);
     public Quiz generateQuiz(Long documentId){
 
-        Document doc = documentRepository.findById(documentId)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+        String email= authUtil.getCurrentUserEmail();
+        User user=userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
+
+        Document doc = documentRepository.findById(documentId).orElseThrow(() -> new RuntimeException("Document not found"));
+
+        if(!doc.getUserId().equals(user.getId())){
+            throw new RuntimeException("Unauthorized access to document");
+        }
+
         String text = doc.getExtractedText();
         String prompt=buildPrompt(text);
         log.info("Generating quiz for documentId {}", documentId);

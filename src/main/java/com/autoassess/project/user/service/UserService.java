@@ -3,9 +3,11 @@ package com.autoassess.project.user.service;
 import com.autoassess.project.security.JwtUtil;
 import com.autoassess.project.user.dto.LoginRequest;
 import com.autoassess.project.user.dto.RegisterRequest;
+import com.autoassess.project.user.dto.RegisterResponse;
 import com.autoassess.project.user.entity.User;
 import com.autoassess.project.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +24,7 @@ public class UserService {
 
     private static final Logger log=LoggerFactory.getLogger(UserService.class);
 
-    public User register(RegisterRequest request){
+    public RegisterResponse register(RegisterRequest request){
 
         if(userRepository.findByEmail(request.getEmail()).isPresent()){
             throw new RuntimeException("Email already registered");
@@ -33,18 +35,28 @@ public class UserService {
 
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword()); //plain for now
+        BCryptPasswordEncoder encode=new BCryptPasswordEncoder();
+        user.setPassword(encode.encode(request.getPassword()));
         user.setCreatedAt(LocalDateTime.now());
         User savedUser = userRepository.save(user);
 
         log.info("User registered successfully. User ID: {}", savedUser.getId());
 
-        return savedUser;    }
+        RegisterResponse response= new RegisterResponse();
+        response.setUserId(savedUser.getId());
+        response.setName(savedUser.getName());
+        response.setEmail(savedUser.getEmail());
+        response.setMessage("User registered successfully");
+
+        return response;
+    }
 
     public String login(LoginRequest request){
         User user=userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new RuntimeException("User not found"));
 
-        if(!user.getPassword().equals(request.getPassword())){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        if(!encoder.matches(request.getPassword(), user.getPassword())){
             throw new RuntimeException("Invalid password");
         }
         log.info("Login successful. User ID: {}", user.getId());
