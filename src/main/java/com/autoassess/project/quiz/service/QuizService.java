@@ -32,18 +32,21 @@ public class QuizService {
     private UserRepository userRepository;
 
     private static final Logger log =LoggerFactory.getLogger(QuizService.class);
-    public Quiz generateQuiz(Long documentId){
+    public Quiz generateQuiz(Long documentId,Long userId){
 
-        String email= authUtil.getCurrentUserEmail();
-        User user=userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
+//        String email= authUtil.getCurrentUserEmail();
+//        User user=userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
 
         Document doc = documentRepository.findById(documentId).orElseThrow(() -> new RuntimeException("Document not found"));
 
-        if(!doc.getUserId().equals(user.getId())){
+        if(!doc.getUserId().equals(userId)){
             throw new RuntimeException("Unauthorized access to document");
         }
 
         String text = doc.getExtractedText();
+        if (text == null || text.isBlank()) {
+            throw new RuntimeException("Document text not ready yet");
+        }
         String prompt=buildPrompt(text);
         log.info("Generating quiz for documentId {}", documentId);
         String aiResponse=callLLM(prompt);
@@ -59,7 +62,7 @@ public class QuizService {
     private String buildPrompt(String text){
 
             return """
-            Generate exactly 5 MCQs from the following content.
+            Generate exactly 10 MCQs from the following content.
             
             Return ONLY valid JSON.
             

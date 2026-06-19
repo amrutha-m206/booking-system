@@ -3,6 +3,8 @@ package com.autoassess.project.document.service;
 import com.autoassess.project.document.entity.Document;
 import com.autoassess.project.document.repository.DocumentRepository;
 import com.autoassess.project.document.utils.PDFExtractor;
+import com.autoassess.project.kafka.DocumentEvent;
+import com.autoassess.project.kafka.producer.DocumentProducer;
 import com.autoassess.project.security.AuthUtil;
 import com.autoassess.project.user.entity.User;
 import com.autoassess.project.user.repository.UserRepository;
@@ -26,6 +28,10 @@ public class DocumentService {
 
     @Autowired
     private AuthUtil authUtil;
+
+    @Autowired
+    private DocumentProducer documentProducer;
+
 
     private static final Logger log = LoggerFactory.getLogger(DocumentService.class);
     private final String uploadDir = System.getProperty("user.dir") + "/uploads/";
@@ -53,9 +59,14 @@ public class DocumentService {
         doc=documentRepository.save(doc);
         log.info("Document saved with ID: {} and status: UPLOADED", doc.getId());
 
-        return processDocument(doc);
+        DocumentEvent event=new DocumentEvent();
+        event.setDocumentId(doc.getId());
+        event.setUserId(user.getId());
+        documentProducer.sendDocumentEvent(event);
+
+        return doc;
     }
-    private Document processDocument(Document doc) throws IOException{
+    public Document processDocument(Document doc) throws IOException{
         try{
             //marking processing
             log.info("Processing document ID: {}", doc.getId());
