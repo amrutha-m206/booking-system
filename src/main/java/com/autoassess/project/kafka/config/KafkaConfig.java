@@ -27,6 +27,6 @@ public class KafkaConfig {
 
     @Bean //Spring controls when it runs (during startup),stores the returned object in the Spring container and creates once and reuses the same instance
     public KafkaTemplate<String,String> kafkaTemplate(){
-         return new KafkaTemplate<>(producerFactory());
+        return new KafkaTemplate<>(producerFactory());
     }
 }

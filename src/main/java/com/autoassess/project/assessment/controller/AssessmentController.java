@@ -26,10 +26,5 @@ public class AssessmentController {
         return assessmentService.getHistory();
     }
 
-    @GetMapping("/analytics")
-    public Map<String,Object> getAnalytics(){
-        return assessmentService.getAnalytics();
-    }
-
 
 }

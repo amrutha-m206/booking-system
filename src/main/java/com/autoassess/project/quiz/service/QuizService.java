@@ -62,7 +62,7 @@ public class QuizService {
     private String buildPrompt(String text){
 
             return """
-            Generate exactly 10 MCQs from the following content.
+            Generate exactly 5 MCQs from the following content.
             
             Return ONLY valid JSON.
             

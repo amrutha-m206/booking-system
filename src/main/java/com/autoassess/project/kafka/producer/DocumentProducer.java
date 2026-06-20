@@ -25,7 +25,7 @@ public class DocumentProducer {
             ObjectMapper mapper=new ObjectMapper();
             String message=mapper.writeValueAsString(event);
 
-            log.info("Sending document upload event. documentId={}, userId={}",
+            log.info("Publishing document upload event. documentId={}, userId={}",
                     event.getDocumentId(), event.getUserId());
 
             kafkaTemplate.send(TOPIC,message);

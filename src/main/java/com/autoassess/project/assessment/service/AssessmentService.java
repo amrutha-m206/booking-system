@@ -3,6 +3,7 @@ package com.autoassess.project.assessment.service;
 import com.autoassess.project.assessment.dto.AssessmentRequest;
 import com.autoassess.project.assessment.entity.Assessment;
 import com.autoassess.project.assessment.repository.AssessmentRepository;
+import com.autoassess.project.kafka.producer.ScoreProducer;
 import com.autoassess.project.quiz.entity.Quiz;
 import com.autoassess.project.quiz.repository.QuizRepository;
 import com.autoassess.project.security.AuthUtil;
@@ -34,6 +35,8 @@ public class AssessmentService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ScoreProducer scoreProducer;
 
     private final ObjectMapper mapper=new ObjectMapper();
 
@@ -85,6 +88,8 @@ public class AssessmentService {
 
         Assessment saved= assessmentRepository.save(assessment);
         log.info("Assessment saved successfully with id: {}", saved.getId());
+
+        scoreProducer.publishScore(saved.getId(),saved.getUserId(),saved.getScorePercentage());
         return saved;
 
     }
@@ -96,41 +101,6 @@ public class AssessmentService {
         return assessmentRepository.findByUserId(user.getId());
     }
 
-    public Map<String,Object> getAnalytics(){
 
-        String email=authUtil.getCurrentUserEmail();
-
-        User user=userRepository.findByEmail(email).orElseThrow();
-
-        List<Assessment> assessments=assessmentRepository.findByUserId(user.getId());
-
-        if(assessments.isEmpty()){
-            return Map.of(
-                    "totalAttempts",0,
-                    "avgScore",0,
-                    "bestScore",0,
-                    "worstScore",0
-            );
-        }
-        double totalScore=0;
-        double best=Double.MIN_VALUE;
-        double worst=Double.MAX_VALUE;
-
-        for(Assessment a:assessments){
-            double score=a.getScorePercentage();
-            totalScore+=score;
-
-            best=Math.max(best,score);
-            worst=Math.min(worst,score);
-        }
-        double avg=totalScore/ assessments.size();
-        return Map.of(
-                "totalAttempts",assessments.size(),
-                "avgScore",avg,
-                "bestScore",best,
-                "worstScore",worst
-        );
-
-    }
 
 }
