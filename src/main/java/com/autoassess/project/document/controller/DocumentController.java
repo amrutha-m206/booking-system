@@ -1,5 +1,6 @@
 package com.autoassess.project.document.controller;
 
+import com.autoassess.project.document.dto.DocumentUploadResponse;
 import com.autoassess.project.document.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class DocumentController {
     private DocumentService documentService;
 
     @PostMapping("/upload")
-    public Document upload(@RequestParam("file") MultipartFile file) throws IOException {
+    public DocumentUploadResponse upload(@RequestParam("file") MultipartFile file) throws IOException {
         return documentService.uploadDocument(file);
     }
 

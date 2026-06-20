@@ -1,6 +1,7 @@
 package com.autoassess.project.quiz.controller;
 
 
+import com.autoassess.project.quiz.dto.QuizResponse;
 import com.autoassess.project.quiz.entity.Quiz;
 import com.autoassess.project.quiz.service.QuizService;
 import com.autoassess.project.security.AuthUtil;
@@ -23,12 +24,18 @@ public class QuizController {
     private UserRepository userRepository;
 
     @PostMapping("/generate")
-    public Quiz generate(@RequestParam Long documentId){
+    public void generate(@RequestParam Long documentId){
         String email= authUtil.getCurrentUserEmail();
         User user=userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
-        return quizService.generateQuiz(documentId,user.getId());
+        quizService.generateQuiz(documentId,user.getId());
     }
 
+    @GetMapping("/{documentId}")
+    public QuizResponse getQuiz(@PathVariable Long documentId){
+
+        System.out.println("GET QUIZ HIT: " + documentId);
+        return quizService.getQuiz(documentId);
+    }
 
 
 }

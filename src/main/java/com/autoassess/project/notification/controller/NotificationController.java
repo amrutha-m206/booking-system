@@ -1,5 +1,6 @@
 package com.autoassess.project.notification.controller;
 
+import com.autoassess.project.notification.dto.NotificationResponse;
 import com.autoassess.project.notification.entity.Notification;
 import com.autoassess.project.notification.service.NotificationService;
 import com.autoassess.project.security.AuthUtil;
@@ -24,7 +25,7 @@ public class NotificationController {
     private UserRepository userRepository;
 
     @GetMapping
-    public List<Notification> getNotifications(){
+    public List<NotificationResponse> getNotifications(){
         String email=authUtil.getCurrentUserEmail();
         User user=userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
 
@@ -33,11 +34,11 @@ public class NotificationController {
     }
 
     @PostMapping("/create")
-    public Notification createNotification(@RequestParam String message){
+    public void createNotification(@RequestParam String message){
         String email=authUtil.getCurrentUserEmail();
         User user=userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
 
-        return notificationService.createNotification(user.getId(),message);
+        notificationService.createNotification(user.getId(),message);
     }
 
 }

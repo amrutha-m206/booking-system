@@ -3,6 +3,7 @@ package com.autoassess.project.quiz.service;
 import com.autoassess.project.document.entity.Document;
 import com.autoassess.project.document.repository.DocumentRepository;
 import com.autoassess.project.quiz.client.GroqClient;
+import com.autoassess.project.quiz.dto.QuizResponse;
 import com.autoassess.project.quiz.entity.Quiz;
 import com.autoassess.project.quiz.repository.QuizRepository;
 import com.autoassess.project.security.AuthUtil;
@@ -32,7 +33,7 @@ public class QuizService {
     private UserRepository userRepository;
 
     private static final Logger log =LoggerFactory.getLogger(QuizService.class);
-    public Quiz generateQuiz(Long documentId,Long userId){
+    public void generateQuiz(Long documentId,Long userId){
 
 //        String email= authUtil.getCurrentUserEmail();
 //        User user=userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User not found"));
@@ -56,7 +57,7 @@ public class QuizService {
         log.info("LLM Response: {}", aiResponse);
         quiz.setQuestions(aiResponse);
 
-        return quizRepository.save(quiz);
+        quizRepository.save(quiz);
     }
 
     private String buildPrompt(String text){
@@ -84,5 +85,14 @@ public class QuizService {
 
         return groqClient.generateQuiz(prompt);
     }
+  //private methods can only be called inside the same class; controllers cannot call it.
+    public QuizResponse getQuiz(Long documentId){
+         Quiz quiz=quizRepository.findByDocumentId(documentId).orElseThrow(()-> new RuntimeException("Quiz not found"));
 
+         QuizResponse response=new QuizResponse();
+         response.setQuizId(quiz.getId());
+         response.setQuestions(quiz.getQuestions());
+
+         return response;
+    }
 }

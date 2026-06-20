@@ -15,5 +15,6 @@ public class Analytics {
     private Double totalScore;
     private Double bestScore;
     private Double worstScore;
+    private Double avgScore;
 
 }

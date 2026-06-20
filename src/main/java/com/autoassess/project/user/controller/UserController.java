@@ -20,16 +20,12 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public RegisterResponse register(@RequestBody RegisterRequest request){
+    public RegisterResponse register(@RequestBody RegisterRequest request) {
         return userService.register(request);
     }
 
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request){
-        String token= userService.login(request);
-        LoginResponse response = new LoginResponse(); //creating an object of LoginResponse
-        response.setToken(token);
-        return response;
+    public LoginResponse login(@RequestBody LoginRequest request) {
+        return userService.login(request);
     }
-
 }

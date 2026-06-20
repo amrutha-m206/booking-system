@@ -1,6 +1,7 @@
 package com.autoassess.project.assessment.controller;
 
 import com.autoassess.project.assessment.dto.AssessmentRequest;
+import com.autoassess.project.assessment.dto.AssessmentResponse;
 import com.autoassess.project.assessment.entity.Assessment;
 import com.autoassess.project.assessment.service.AssessmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class AssessmentController {
     private AssessmentService assessmentService;
 
     @PostMapping("/submit")
-    public Assessment submit(@RequestBody AssessmentRequest request) throws Exception{
+    public AssessmentResponse submit(@RequestBody AssessmentRequest request) throws Exception{
         return assessmentService.submitQuiz(request);
     }
 

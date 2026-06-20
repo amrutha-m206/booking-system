@@ -1,6 +1,7 @@
 package com.autoassess.project.assessment.service;
 
 import com.autoassess.project.assessment.dto.AssessmentRequest;
+import com.autoassess.project.assessment.dto.AssessmentResponse;
 import com.autoassess.project.assessment.entity.Assessment;
 import com.autoassess.project.assessment.repository.AssessmentRepository;
 import com.autoassess.project.kafka.producer.ScoreProducer;
@@ -42,7 +43,7 @@ public class AssessmentService {
 
     private static final Logger log=LoggerFactory.getLogger(AssessmentService.class);
 
-    public Assessment submitQuiz(AssessmentRequest request) throws Exception{
+    public AssessmentResponse submitQuiz(AssessmentRequest request) throws Exception{
 
         String email=authUtil.getCurrentUserEmail();
         User user=userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
@@ -90,7 +91,14 @@ public class AssessmentService {
         log.info("Assessment saved successfully with id: {}", saved.getId());
 
         scoreProducer.publishScore(saved.getId(),saved.getUserId(),saved.getScorePercentage());
-        return saved;
+
+        AssessmentResponse response=new AssessmentResponse();
+        response.setAssessmentId(saved.getId());
+        response.setScore(saved.getScorePercentage());
+        response.setTotalQuestions(saved.getTotalQuestions());
+        response.setCorrectAnswers(saved.getCorrectAnswers());
+
+        return response;
 
     }
 

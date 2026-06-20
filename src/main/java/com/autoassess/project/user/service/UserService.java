@@ -2,6 +2,7 @@ package com.autoassess.project.user.service;
 
 import com.autoassess.project.security.JwtUtil;
 import com.autoassess.project.user.dto.LoginRequest;
+import com.autoassess.project.user.dto.LoginResponse;
 import com.autoassess.project.user.dto.RegisterRequest;
 import com.autoassess.project.user.dto.RegisterResponse;
 import com.autoassess.project.user.entity.User;
@@ -51,7 +52,7 @@ public class UserService {
         return response;
     }
 
-    public String login(LoginRequest request){
+    public LoginResponse login(LoginRequest request){
         User user=userRepository.findByEmail(request.getEmail()).orElseThrow(()-> new RuntimeException("User not found"));
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -61,7 +62,9 @@ public class UserService {
         }
         log.info("Login successful. User ID: {}", user.getId());
 
-        return jwtUtil.generateToken(user.getEmail());
+        LoginResponse response= new LoginResponse();
+        response.setToken(jwtUtil.generateToken(user.getEmail()));
+        return response;
     }
 
 }

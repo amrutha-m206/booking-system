@@ -20,10 +20,10 @@ public class AnalyticsService {
                         .orElseGet(() -> {
                             Analytics a = new Analytics();
                             a.setUserId(userId);
-
                             a.setTotalAttempts(0);
                             a.setTotalScore(0.0);
                             a.setBestScore(0.0);
+                            a.setAvgScore(0.0);
                             a.setWorstScore(100.0);
 
                             return a;
@@ -32,6 +32,7 @@ public class AnalyticsService {
         analytics.setTotalScore(analytics.getTotalScore()+Score);
         analytics.setBestScore(Math.max(analytics.getBestScore(), Score));
         analytics.setWorstScore(Math.min(analytics.getWorstScore(), Score));
+        analytics.setAvgScore(analytics.getTotalScore() / analytics.getTotalAttempts());
 
         analyticsRepository.save(analytics);
     }

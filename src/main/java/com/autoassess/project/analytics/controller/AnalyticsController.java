@@ -1,6 +1,7 @@
 package com.autoassess.project.analytics.controller;
 
 
+import com.autoassess.project.analytics.dto.AnalyticsResponse;
 import com.autoassess.project.analytics.entity.Analytics;
 import com.autoassess.project.analytics.repository.AnalyticsRepository;
 import com.autoassess.project.security.AuthUtil;
@@ -23,13 +24,20 @@ public class AnalyticsController {
     private UserRepository userRepository;
 
     @GetMapping("/analytics")
-    public Analytics getAnalytics(){
+    public AnalyticsResponse getAnalytics(){
         String email=authUtil.getCurrentUserEmail();
 
         User user=userRepository.findByEmail(email).orElseThrow();
 
-        return analyticsRepository.findByUserId(user.getId()).orElseThrow(()-> new RuntimeException("Analytics not found"));
+        Analytics analytics=analyticsRepository.findByUserId(user.getId()).orElseThrow(()-> new RuntimeException("Analytics not found"));
 
+        AnalyticsResponse response=new AnalyticsResponse();
+        response.setTotalAttempts(analytics.getTotalAttempts());
+        response.setAvgScore(analytics.getAvgScore());
+        response.setBestScore(analytics.getBestScore());
+        response.setWorstScore(analytics.getWorstScore());
+
+        return response;
 
     }
 }
