@@ -1,7 +1,9 @@
 package com.autoassess.project.assessment.service;
 
+import com.autoassess.project.assessment.dto.AssessmentHistoryResponse;
 import com.autoassess.project.assessment.dto.AssessmentRequest;
 import com.autoassess.project.assessment.dto.AssessmentResponse;
+import com.autoassess.project.assessment.dto.QuestionResultDto;
 import com.autoassess.project.assessment.entity.Assessment;
 import com.autoassess.project.assessment.repository.AssessmentRepository;
 import com.autoassess.project.kafka.producer.ScoreProducer;
@@ -18,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -58,16 +61,28 @@ public class AssessmentService {
 
         int totalQuestions=quizArray.size();
 
+        List<QuestionResultDto> results=new ArrayList<>();
+
         for(int i=0;i<quizArray.size();i++){
             JsonNode q=quizArray.get(i);
-
+            String question=q.get("question").asText();
             String correctAnswer=q.get("answer").asText();
 
             String userAnswer=request.getAnswers().get(i);
-            log.info("Q{} -> correct: {}, user: {}", i + 1, correctAnswer, userAnswer);
-            if(correctAnswer.equalsIgnoreCase(userAnswer)){
+//            log.info("Q{} -> correct: {}, user: {}", i + 1, correctAnswer, userAnswer);
+
+            boolean isCorrect=correctAnswer.equalsIgnoreCase(userAnswer);
+            if(isCorrect){
                 correct++;
             }
+
+            QuestionResultDto result=new QuestionResultDto();
+
+            result.setQuestion(question);
+            result.setCorrectAnswer(correctAnswer);
+            result.setUserAnswer(userAnswer);
+            result.setCorrect(isCorrect);
+            results.add(result);
         }
 
         int wrong = totalQuestions - correct;
@@ -97,16 +112,34 @@ public class AssessmentService {
         response.setScore(saved.getScorePercentage());
         response.setTotalQuestions(saved.getTotalQuestions());
         response.setCorrectAnswers(saved.getCorrectAnswers());
-
+        response.setResults(results);
         return response;
 
     }
 
-    public List<Assessment> getHistory(){
+    public List<AssessmentHistoryResponse> getHistory(){
         String email=authUtil.getCurrentUserEmail();
 
         User user=userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found"));
-        return assessmentRepository.findByUserId(user.getId());
+        List<Assessment> assessments= assessmentRepository.findByUserId(user.getId());
+
+        List<AssessmentHistoryResponse> responseList=new ArrayList<>();
+
+        for(Assessment assessment:assessments){
+            AssessmentHistoryResponse response=new AssessmentHistoryResponse();
+
+            response.setAssessmentId(assessment.getId());
+            response.setQuizId(assessment.getQuizId());
+            response.setScorePercentage(assessment.getScorePercentage());
+            response.setCorrectAnswers(assessment.getCorrectAnswers());
+            response.setTotalQuestions(assessment.getTotalQuestions());
+            response.setWrongAnswers(assessment.getWrongAnswers());
+            response.setSubmittedAt(assessment.getSubmittedAt());
+
+            responseList.add(response);
+
+        }
+        return responseList;
     }
 
 

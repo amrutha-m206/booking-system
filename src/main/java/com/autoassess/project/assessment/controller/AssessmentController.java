@@ -1,5 +1,6 @@
 package com.autoassess.project.assessment.controller;
 
+import com.autoassess.project.assessment.dto.AssessmentHistoryResponse;
 import com.autoassess.project.assessment.dto.AssessmentRequest;
 import com.autoassess.project.assessment.dto.AssessmentResponse;
 import com.autoassess.project.assessment.entity.Assessment;
@@ -23,7 +24,7 @@ public class AssessmentController {
     }
 
     @GetMapping("/history")
-    public List<Assessment> getHistory(){
+    public List<AssessmentHistoryResponse> getHistory(){
         return assessmentService.getHistory();
     }
 
