@@ -1,19 +1,28 @@
 import {useState} from "react";
+import {useNavigate} from "react-router-dom";
 import {uploadDocument} from "../services/documentService";
 
 function UploadDocument(){
     const[file,setFile]=useState(null);
+    const navigate=useNavigate();
     const handleUpload=async()=>{
        try{
          const data=await uploadDocument(file);
+         localStorage.setItem("documentId",data.id);
          alert("Upload Successfully");
-         console.log(data);
-
+//          console.log(data);
        } catch(error){
            alert("Upload Failed");
        }
 
 };
+
+const handleStartQuiz=()=>{
+   const documentId=localStorage.getItem("documentId");
+    navigate(`/quiz/${documentId}`);
+
+};
+
 return(
   <div>
       <h1>Upload Document</h1>
@@ -25,6 +34,7 @@ return(
       <br />
       <br />
       <button onClick={handleUpload}>Upload</button>
+      <button onClick={handleStartQuiz}>Start Quiz</button>
   </div>
 
 );

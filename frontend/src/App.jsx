@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UploadDocument from "./pages/UploadDocument";
+import Quiz from "./pages/Quiz";
 
 function App(){
     return(
@@ -18,7 +19,13 @@ function App(){
                                      <ProtectedRoute>
                                          <UploadDocument/>
                                          </ProtectedRoute>
-                                }/>
+                                  }/>
+                <Route path="/quiz/:documentId" element={
+                                       <ProtectedRoute>
+                                           <Quiz/>
+                                       </ProtectedRoute>
+
+                                  }/>
             </Routes>
          </BrowserRouter>
         );
