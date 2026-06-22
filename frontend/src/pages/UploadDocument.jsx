@@ -7,6 +7,7 @@ function UploadDocument(){
     const navigate=useNavigate();
     const handleUpload=async()=>{
        try{
+           localStorage.removeItem("quizSubmitted");
          const data=await uploadDocument(file);
          localStorage.setItem("documentId",data.id);
          alert("Upload Successfully");
@@ -19,6 +20,12 @@ function UploadDocument(){
 
 const handleStartQuiz=()=>{
    const documentId=localStorage.getItem("documentId");
+       if (!documentId) {
+
+           alert("Please upload a document first");
+
+           return;
+       }
     navigate(`/quiz/${documentId}`);
 
 };

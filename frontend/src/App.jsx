@@ -4,6 +4,10 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UploadDocument from "./pages/UploadDocument";
 import Quiz from "./pages/Quiz";
+import Result from "./pages/Result";
+import AssessmentHistory from "./pages/AssessmentHistory";
+import Analytics from "./pages/Analytics";
+import Notifications from "./pages/Notifications";
 
 function App(){
     return(
@@ -26,6 +30,26 @@ function App(){
                                        </ProtectedRoute>
 
                                   }/>
+                <Route path="/result/:assessmentId" element={
+                                       <ProtectedRoute>
+                                           <Result/>
+                                       </ProtectedRoute>
+                                  }/>
+                <Route path="/history" element={
+                                        <ProtectedRoute>
+                                           <AssessmentHistory/>
+                                        </ProtectedRoute>
+                                   }/>
+                <Route path="/analytics" element={
+                                        <ProtectedRoute>
+                                            <Analytics />
+                                        </ProtectedRoute>
+                                   }/>
+                <Route path="/notifications" element={
+                                       <ProtectedRoute>
+                                         <Notifications />
+                                       </ProtectedRoute>
+                                   }/>
             </Routes>
          </BrowserRouter>
         );

@@ -70,6 +70,10 @@ public class AssessmentService {
 
             String userAnswer=request.getAnswers().get(i);
 //            log.info("Q{} -> correct: {}, user: {}", i + 1, correctAnswer, userAnswer);
+            JsonNode options=q.get("options");
+
+            String correctAnswerText=options.get(correctAnswer.charAt(0)-'A').asText();
+            String userAnswerText=options.get(userAnswer.charAt(0)-'A').asText();
 
             boolean isCorrect=correctAnswer.equalsIgnoreCase(userAnswer);
             if(isCorrect){
@@ -79,8 +83,8 @@ public class AssessmentService {
             QuestionResultDto result=new QuestionResultDto();
 
             result.setQuestion(question);
-            result.setCorrectAnswer(correctAnswer);
-            result.setUserAnswer(userAnswer);
+            result.setCorrectAnswer(correctAnswerText);
+            result.setUserAnswer(userAnswerText);
             result.setCorrect(isCorrect);
             results.add(result);
         }
