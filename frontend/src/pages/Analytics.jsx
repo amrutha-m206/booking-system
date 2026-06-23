@@ -28,9 +28,14 @@ function Analytics(){
           };
              loadAnalytics();
        },[]);
-    if(!analytics){
-       return <h2>Loading...</h2>
-    }
+   
+   if (!analytics) {
+     return (
+       <div className="no-analytics">
+         <h2>No analytics available yet. Take a quiz to see insights.</h2>
+       </div>
+     );
+   }
 
 
     return (

@@ -76,3 +76,13 @@ body {
 .logout-btn:hover {
     opacity: 0.9;
 }
+
+.no-analytics {
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #6b7280;
+    font-size: 20px;
+}

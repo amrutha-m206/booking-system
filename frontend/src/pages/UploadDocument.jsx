@@ -1,19 +1,34 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {uploadDocument} from "../services/documentService";
+import "./UploadDocument.css";
 
 function UploadDocument(){
     const[file,setFile]=useState(null);
+    const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
     const navigate=useNavigate();
     const handleUpload=async()=>{
+        if (!file) {
+            setError("Please select a file first");
+            setMessage("");
+            return;
+        }
        try{
+           setLoading(true);
+           setError("");
+           setMessage("");
            localStorage.removeItem("quizSubmitted");
          const data=await uploadDocument(file);
          localStorage.setItem("documentId",data.id);
-         alert("Upload Successfully");
-//          console.log(data);
-       } catch(error){
-           alert("Upload Failed");
+         setMessage("Upload successful");
+
+       } catch (error) {
+                setError("Upload failed. Please try again");
+       } finally {
+            setLoading(false);
        }
 
 };
@@ -21,27 +36,39 @@ function UploadDocument(){
 const handleStartQuiz=()=>{
    const documentId=localStorage.getItem("documentId");
        if (!documentId) {
-
-           alert("Please upload a document first");
-
-           return;
+            setError("Please upload a document first");
+            setMessage("");
+            return;
        }
     navigate(`/quiz/${documentId}`);
 
 };
 
 return(
-  <div>
-      <h1>Upload Document</h1>
-      <input
+  <div className="upload-container">
+
+      <h1 className="upload-title">Upload Document</h1>
+      <input className="upload-input"
         type="file"
         accept=".pdf"
         onChange={(e)=> setFile(e.target.files[0])}
       />
       <br />
       <br />
-      <button onClick={handleUpload}>Upload</button>
-      <button onClick={handleStartQuiz}>Start Quiz</button>
+      {message && (
+          <p className="success-text">{message}</p>
+      )}
+
+      {error && (
+          <p className="error-text">{error}</p>
+      )}
+      <button className="upload-btn" onClick={handleUpload}>
+          Upload
+      </button>
+
+      <button className="start-btn" onClick={handleStartQuiz}>
+          Start Quiz
+      </button>
   </div>
 
 );

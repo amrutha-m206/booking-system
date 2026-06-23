@@ -2,16 +2,26 @@ import {useState} from "react"; //Stores and manages data inside a component
 import {useNavigate} from "react-router-dom"; //Used to move between pages (routes)
 import {login} from "../services/authService";
 import "./Login.css";
+import { validateLogin } from "../utils/validate";
 
 function Login(){
     const navigate=useNavigate();
     const[email,setEmail]=useState("");
     const[password,setPassword]=useState("");
     const [error, setError] = useState("");
+    const [errors, setErrors] = useState({});
 
-    const handleLogin =async ()=>{
+  const handleLogin =async ()=>{
+        setErrors({});
+        setError("");
+
+    const errs = validateLogin(email, password);
+
+    if (Object.keys(errs).length > 0) {
+        setErrors(errs);
+        return;
+    }
       try{
-             setError("");
              const data=await login(email,password);
              localStorage.setItem("token",data.token);
              navigate("/dashboard");
@@ -28,6 +38,11 @@ return(
                   {error}
               </p>
           )}
+
+      {errors.email && <p className="error-text">{errors.email}</p>}
+
+      {errors.password && <p className="error-text">{errors.password}</p>}
+
      <input className="login-input"
         type="email"
         placeholder="Email"
