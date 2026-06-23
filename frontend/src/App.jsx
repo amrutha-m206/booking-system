@@ -8,12 +8,15 @@ import Result from "./pages/Result";
 import AssessmentHistory from "./pages/AssessmentHistory";
 import Analytics from "./pages/Analytics";
 import Notifications from "./pages/Notifications";
+import NotFound from "./pages/NotFound";
+import Register from "./pages/Register";
 
 function App(){
     return(
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Login/>}/>
+                <Route path="/register" element={<Register />} />
                 <Route path="/dashboard" element={
                                      <ProtectedRoute>
                                      <Dashboard/>
@@ -50,7 +53,11 @@ function App(){
                                          <Notifications />
                                        </ProtectedRoute>
                                    }/>
-            </Routes>
+                        }/>
+                <Route path="*" element={
+                                         <NotFound />
+                                   }/>
+         </Routes>
          </BrowserRouter>
         );
 }

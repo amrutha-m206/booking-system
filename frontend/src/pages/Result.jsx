@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-
+import "./Result.css";
 
 function Result() {
 
@@ -13,34 +13,35 @@ function Result() {
     }
 
     return (
-        <div>
-            <h1>Result</h1>
+        <div className="result-container">
+            <h1 className="result-title">Result</h1>
 
+        <div className="summary-box">
             <p>Score: {result.score}%</p>
             <p>Correct: {result.correctAnswers}</p>
             <p>Total: {result.totalQuestions}</p>
-            <hr />
+         </div>
 
-            <h2>Question Review</h2>
-
+            <h2 style={{ fontWeight: "bold", color: "#f9a8d4" }}>
+                Question Review
+            </h2>
             {result.results.map((item,index)=>(
-                <div key={index}>
-                    <h3>Question{index+1}</h3>
-                    <p>{item.question}</p>
-                    <p>Your Answer:{item.userAnswer}</p>
-                    <p>Correct Answer:{item.correctAnswer}</p>
-                    <p>{item.correct?"Correct":"Incorrect"}</p>
-                    <hr />
+                <div className="question-card" key={index}>
+                    <h3 className="question-title">Question {index+1}</h3>
+                    <p className="answer">{item.question}</p>
+                    <p className="answer">Your Answer : <strong>{item.userAnswer}</strong></p>
+                    <p className="answer"> Correct Answer : <strong>{item.correctAnswer}</strong></p>
+                    <p className={item.correct ? "correct" : "incorrect"}>{item.correct ? "Correct" : "Incorrect"}</p>
                     </div>
                     )
                 )}
-
-        <button onClick={() => navigate("/history")}>
+        <div className="button-group">
+        <button className="btn btn-history" onClick={() => navigate("/history")}>
             View History
         </button>
 
-        <button onClick={()=> navigate("/dashboard")}>Go To Dashboard</button>
-
+        <button className="btn btn-dashboard" onClick={()=> navigate("/dashboard")}>Go To Dashboard</button>
+         </div>
          </div>
     );
 }

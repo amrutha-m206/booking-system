@@ -1,0 +1,64 @@
+.history-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.history-title {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #8b5cf6;
+    font-size:55px;
+    font-weight: bold;
+}
+
+.history-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 15px;
+        width: 400px;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.score {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+.history-info {
+    margin: 6px 0;
+}
+
+.empty-history {
+    text-align: center;
+    color: #666;
+}
+.dashboard-btn {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #166534;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+}
+.questions-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.logout-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #ef4444;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+}

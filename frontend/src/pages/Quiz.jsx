@@ -3,6 +3,7 @@ import {useParams} from "react-router-dom";
 import {getQuiz} from "../services/quizService";
 import {submitAssessment} from "../services/assessmentService";
 import {useNavigate} from "react-router-dom";
+import "./Quiz.css";
 
 function Quiz(){
    const {documentId}=useParams();
@@ -34,6 +35,40 @@ function Quiz(){
   loadQuiz();
    },[documentId]);
 
+useEffect(() => {
+
+    const handlePopState = async () => {
+
+        if (!quizId) return;
+
+        const wrongAnswers = questions.map(() => "Z");
+
+        try {
+
+            await submitAssessment({
+                quizId: quizId,
+                answers: wrongAnswers
+            });
+
+        } catch (err) {
+            console.error(err);
+        }
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("documentId");
+
+        navigate("/");
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+        window.removeEventListener("popstate", handlePopState);
+    };
+
+}, [quizId, questions, navigate]);
+
+
 const handleSubmit=async()=>{
       try{
              for(let i = 0; i < questions.length; i++) {
@@ -63,16 +98,16 @@ const handleSubmit=async()=>{
 };
 
 return (
-    <div>
-        <h1>Quiz</h1>
+    <div className="quiz-container">
+        <h1 className="quiz-title">Quiz</h1>
           {questions.map((q,index)=>(
-              <div key={index}>
-                  <h3>
+              <div key={index} className="questions-card">
+                  <h3 className="question-text">
                       {index+1}.{q.question}
                   </h3>
 
                   {q.options.map((option,optionIndex)=>(
-                      <div key={optionIndex}>
+                  <label key={optionIndex} className="option">
                          <input
                              type="radio"
                              name={`question-${index}`}
@@ -84,12 +119,12 @@ return (
                                  }}
                          />
                          {option}
-                      </div>
+                      </label>
                   ))}
               <br />
               </div>
           ))}
-          <button onClick={handleSubmit}>
+          <button className="submit-btn" onClick={handleSubmit}>
               Submit Quiz
           </button>
     </div>
